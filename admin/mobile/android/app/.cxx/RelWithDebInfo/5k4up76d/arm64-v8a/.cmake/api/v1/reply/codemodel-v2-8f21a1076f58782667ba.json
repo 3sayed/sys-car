@@ -1,0 +1,188 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1,
+						2,
+						3,
+						4,
+						5
+					],
+					"jsonFile" : "directory-.-RelWithDebInfo-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.13"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0
+					]
+				},
+				{
+					"build" : "rndocumentpickerCGen_autolinked_build",
+					"jsonFile" : "directory-rndocumentpickerCGen_autolinked_build-RelWithDebInfo-266b7b76dff50f76a33c.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.13"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "C:/Users/pc/Desktop/new-System-car/admin/mobile/node_modules/@react-native-documents/picker/android/build/generated/source/codegen/jni",
+					"targetIndexes" : 
+					[
+						4
+					]
+				},
+				{
+					"build" : "VectorIconsIonicons_autolinked_build",
+					"jsonFile" : "directory-VectorIconsIonicons_autolinked_build-RelWithDebInfo-2bdc2f4f04bfe4dde700.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.13"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "C:/Users/pc/Desktop/new-System-car/admin/mobile/node_modules/@react-native-vector-icons/ionicons/android/build/generated/source/codegen/jni",
+					"targetIndexes" : 
+					[
+						3
+					]
+				},
+				{
+					"build" : "RNKeychainSpec_autolinked_build",
+					"jsonFile" : "directory-RNKeychainSpec_autolinked_build-RelWithDebInfo-a06a0adde40b35519f58.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.13"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "C:/Users/pc/Desktop/new-System-car/admin/mobile/node_modules/react-native-keychain/android/build/generated/source/codegen/jni",
+					"targetIndexes" : 
+					[
+						2
+					]
+				},
+				{
+					"build" : "safeareacontext_autolinked_build",
+					"jsonFile" : "directory-safeareacontext_autolinked_build-RelWithDebInfo-60a124bcfad57d0655aa.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.13"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "C:/Users/pc/Desktop/new-System-car/admin/mobile/node_modules/react-native-safe-area-context/android/src/main/jni",
+					"targetIndexes" : 
+					[
+						5
+					]
+				},
+				{
+					"build" : "RNCWebViewSpec_autolinked_build",
+					"jsonFile" : "directory-RNCWebViewSpec_autolinked_build-RelWithDebInfo-9f294f53787b22dd13fb.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.13"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "C:/Users/pc/Desktop/new-System-car/admin/mobile/node_modules/react-native-webview/android/build/generated/source/codegen/jni",
+					"targetIndexes" : 
+					[
+						1
+					]
+				}
+			],
+			"name" : "RelWithDebInfo",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5
+					],
+					"name" : "appmodules",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "appmodules::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-appmodules-RelWithDebInfo-2995e0a899aef024b386.json",
+					"name" : "appmodules",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 5,
+					"id" : "react_codegen_RNCWebViewSpec::@eb48929f9f7453740a6c",
+					"jsonFile" : "target-react_codegen_RNCWebViewSpec-RelWithDebInfo-90dae14bb25bcd446471.json",
+					"name" : "react_codegen_RNCWebViewSpec",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 3,
+					"id" : "react_codegen_RNKeychainSpec::@f9a2cb36ebca2de4baf9",
+					"jsonFile" : "target-react_codegen_RNKeychainSpec-RelWithDebInfo-7f47958af1e2b7a3e95d.json",
+					"name" : "react_codegen_RNKeychainSpec",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 2,
+					"id" : "react_codegen_VectorIconsIonicons::@d19b6b0a3fec254dc7d5",
+					"jsonFile" : "target-react_codegen_VectorIconsIonicons-RelWithDebInfo-5a9da0c40d56500df6ef.json",
+					"name" : "react_codegen_VectorIconsIonicons",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "react_codegen_rndocumentpickerCGen::@aac1846a245ca418eb66",
+					"jsonFile" : "target-react_codegen_rndocumentpickerCGen-RelWithDebInfo-73331ddce33ba835adf0.json",
+					"name" : "react_codegen_rndocumentpickerCGen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 4,
+					"id" : "react_codegen_safeareacontext::@7984cd80db47aa7b952a",
+					"jsonFile" : "target-react_codegen_safeareacontext-RelWithDebInfo-e68a4380ff471189cac3.json",
+					"name" : "react_codegen_safeareacontext",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "C:/Users/pc/Desktop/new-System-car/admin/mobile/android/app/.cxx/RelWithDebInfo/5k4up76d/arm64-v8a",
+		"source" : "C:/Users/pc/Desktop/new-System-car/admin/mobile/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 3
+	}
+}

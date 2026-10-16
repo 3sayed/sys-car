@@ -1,0 +1,4 @@
+C:/Users/pc/Desktop/new-System-car/supplier/android/app/.cxx/Debug/233p2l18/x86_64/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/foo.dir
+C:/Users/pc/Desktop/new-System-car/supplier/android/app/.cxx/Debug/233p2l18/x86_64/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/boo.dir
+C:/Users/pc/Desktop/new-System-car/supplier/android/app/.cxx/Debug/233p2l18/x86_64/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/edit_cache.dir
+C:/Users/pc/Desktop/new-System-car/supplier/android/app/.cxx/Debug/233p2l18/x86_64/CMakeFiles/_CMakeLTOTest-CXX/bin/CMakeFiles/rebuild_cache.dir

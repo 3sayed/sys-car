@@ -1,0 +1,2 @@
+# Worker uses Python 3.11+ standard library. Blender 4.2+ supplies bpy.
+

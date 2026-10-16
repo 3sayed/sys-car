@@ -1,0 +1,35 @@
+{
+    "name":  "inficarx",
+    "private":  true,
+    "version":  "1.0.0",
+    "workspaces":  [
+
+                   ],
+    "scripts":  {
+                    "setup":  "node scripts/setup.mjs",
+                    "dev":  "node scripts/dev.mjs",
+                    "api":  "node scripts/serve-api.mjs",
+                    "preview":  "node scripts/preview.mjs",
+                    "engine":  "node scripts/serve-engine.mjs",
+                    "customer":  "npm run start -w @inficarx/customer",
+                    "supplier":  "npm run start -w @inficarx/supplier",
+                    "customer:web":  "npm run web -w @inficarx/customer",
+                    "supplier:web":  "npm run web -w @inficarx/supplier",
+                    "admin":  "node scripts/serve-api.mjs",
+                    "typecheck":  "tsc --noEmit",
+                    "build:viewer":  "esbuild ./packages/simulator/src/viewer.ts --bundle --format=esm --minify --outfile=./admin/public/viewer/viewer.js",
+                    "build:admin":  "tailwindcss -i admin/resources/css/admin.css -o admin/public/admin.css --minify",
+                    "test:api":  "node scripts/test-api.mjs",
+                    "test:engine":  "node scripts/test-engine.mjs",
+                    "test:e2e":  "playwright test"
+                },
+    "devDependencies":  {
+                            "@playwright/test":  "^1.56.0",
+                            "@types/react":  "~19.1.10",
+                            "@types/three":  "^0.180.0",
+                            "esbuild":  "^0.25.0",
+                            "prettier":  "^3.9.10",
+                            "tailwindcss":  "^3.4.17",
+                            "typescript":  "~5.9.2"
+                        }
+}

@@ -1,0 +1,14 @@
+{
+  "label": "Concept alternator separation; requires expert validation",
+  "required": [
+    "alternator",
+    "bracket"
+  ],
+  "offsets": {
+    "alternator": [
+      1,
+      0,
+      0
+    ]
+  }
+}

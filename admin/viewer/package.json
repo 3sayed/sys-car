@@ -1,0 +1,8 @@
+{
+  "name": "@inficarx/simulator",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "three": "^0.180.0"
+  }
+}

@@ -1,0 +1,616 @@
+Car Spare Parts Marketplace — Database, Technology Stack & Project Structure
+For your project, I recommend two React Native mobile apps, one Laravel backend, one MySQL database, and a separate Python automation engine for processing 3D models and replacement simulations.
+1. Programming languages and technologies
+Layer	Language / Technology	Purpose
+Customer mobile app	TypeScript + React Native (Expo)	AI search, marketplace, 3D simulator, profile
+Supplier mobile app	TypeScript + React Native (Expo)	Shop profile, prices, inventory, requests
+Backend	PHP + Laravel	REST APIs, authentication, business logic
+Database	MySQL 8	Store vehicles, parts, suppliers, prices, and relationships
+3D simulator	TypeScript + Three.js	Render interactive 3D animations
+3D automation	Python + Blender	Process 3D files and generate animation sequences
+AI assistant	Laravel + AI API	Understand questions and search your database
+Background jobs	Laravel Queues + Redis	Process imports, photos, and simulation jobs
+File storage	S3-compatible storage	Store photos, GLB files, and other assets
+Why this stack? You can use Laravel for all core backend functionality, TypeScript for both mobile applications, and Python only for specialized 3D processing. You don't need to build separate backends for customers and suppliers.
+2. Database architecture
+I would divide your database into seven modules:
+
+Accounts & Shops
+Users, suppliers, branches, permissions
+
+
+
+Vehicle Catalog
+Brands, models, years, engines, variants
+
+
+
+Parts Catalog
+Categories, manufacturers, parts, images
+
+
+
+Marketplace
+Supplier inventory, prices, stock
+
+
+
+Requests & Offers
+Customer requests, supplier quotations
+
+
+
+3D Simulation
+Models, components, animations, repair steps
+
+
+
+AI & Automation
+Chat history, imports, processing jobs
+
+
+
+Module A — Accounts and suppliers
+Table	Main columns
+users	id, name, email, phone, password_hash, status
+roles	id, name
+user_roles	user_id, role_id
+shops	id, owner_id, name, description, logo_path, status
+shop_members	id, shop_id, user_id, role
+shop_branches	id, shop_id, name, address, latitude, longitude, phone
+user_vehicles	id, user_id, vehicle_variant_id, nickname
+A user may own multiple shops or work for different shops. A supplier account should only access inventory belonging to its authorized shops.
+Module B — Vehicles
+Table	Main columns
+vehicle_makes	id, name
+vehicle_models	id, make_id, name
+vehicle_variants	id, model_id, year_from, year_to, engine_code, trim, market
+vehicle_identifiers	id, variant_id, identifier_type, identifier_value
+For example:
+Toyota → Camry → 2018–2022 → 2.5L → GCC
+The exact engine, market, and production variant matter because parts can differ between vehicles with the same model name and year.
+Module C — Master spare parts catalog
+Table	Main columns
+part_categories	id, parent_id, name
+part_manufacturers	id, name
+parts	id, manufacturer_id, category_id, part_number, name, description
+part_images	id, part_id, image_path, is_primary, sort_order
+part_compatibility	id, part_id, vehicle_variant_id, fitment_notes
+part_cross_references	id, part_id, reference_number, reference_brand
+part_attributes	id, part_id, attribute_name, attribute_value
+A single part can be compatible with many vehicles, and a single vehicle can have thousands of compatible parts.
+Important: Do not duplicate the entire parts catalog for each shop.
+Module D — Marketplace and inventory
+Table	Main columns
+shop_parts	id, branch_id, part_id, supplier_sku, price, currency, quantity, condition, status
+inventory_movements	id, shop_part_id, movement_type, quantity_change, created_at
+price_history	id, shop_part_id, old_price, new_price, changed_at
+favorites	id, user_id, part_id
+shop_reviews	id, user_id, shop_id, rating, comment
+The shop_parts table is the link between your central catalog and the supplier's inventory.
+For example:
+Part	Supplier	Price
+Bosch Brake Pad BP-1001	Shop A	12 BHD
+Bosch Brake Pad BP-1001	Shop B	15 BHD
+Bosch Brake Pad BP-1001	Shop C	10 BHD
+These are illustrative prices.
+Module E — Part requests
+Table	Main columns
+part_requests	id, user_id, vehicle_variant_id, part_id nullable, description, status
+part_request_images	id, request_id, image_path
+request_offers	id, request_id, shop_id, price, currency, availability, status
+notifications	id, user_id, type, payload, read_at
+The part_id in part_requests can be nullable because customers may not know which component they need.
+Module F — Automated 3D replacement simulations
+This module is different from a normal 3D catalog. It needs to represent assemblies, components, repair procedures, and animation sequences.
+Table	Main columns
+simulation_models	id, name, model_file_path, model_type, version
+simulation_components	id, simulation_model_id, parent_component_id, part_id nullable, mesh_name
+repair_procedures	id, title, description, status, source_reference
+repair_procedure_vehicles	procedure_id, vehicle_variant_id
+repair_procedure_parts	procedure_id, part_id
+repair_steps	id, procedure_id, step_number, instruction, warning
+repair_step_animations	id, step_id, component_id, animation_name, start_time, end_time
+simulation_jobs	id, procedure_id, source_model_id, status, output_path, error_message
+This allows the Python engine to process a model and produce a candidate animation.
+Each generated simulation should have a validation status such as draft, pending_review, approved, or rejected. Only approved repair procedures should be published as verified instructions.
+Module G — AI and catalog imports
+Table	Main columns
+ai_conversations	id, user_id, title, created_at
+ai_messages	id, conversation_id, role, content
+catalog_sources	id, name, source_type, license_reference
+catalog_imports	id, source_id, status, total_rows, processed_rows
+catalog_import_errors	id, import_id, row_number, error_message
+media_assets	id, file_path, media_type, source_id, license_reference
+The media_assets table helps track where photos and 3D files came from and whether you have permission to use them.
+3. Main database relationships
+This is the simplified relationship structure:
+Vehicle and parts catalog
+vehicle_makes
+Toyota, BMW, Nissan...
+
+
+vehicle_models
+
+
+vehicle_variants
+
+
+part_compatibility
+Many-to-many relationship
+
+
+parts
+
+
+part_images
+
+
+shop_parts
+
+
+simulation_components
+
+
+
+
+Important database constraints:
+- part_compatibility: unique (part_id, vehicle_variant_id) where each pair represents one fitment.
+- parts: unique manufacturer and normalized part number, subject to your catalog's part-number rules.
+- shop_parts: index part_id, branch_id, and status for fast supplier comparisons.
+- part_categories: self-referencing parent_id for nested categories.
+- repair_steps: unique (procedure_id, step_number).
+- Monetary values: use DECIMAL, not floating-point numbers.
+- Store all timestamps in UTC and convert them for display.
+For suppliers, allow multiple listings for the same part when condition, branch, or supplier SKU differs. Define uniqueness rules accordingly.
+4. Complete project folder structure
+
+car-parts-marketplace/
+│
+├── apps/
+│   │
+│   ├── customer/                   # Expo + React Native
+│   │   ├── app/
+│   │   │   ├── (auth)/
+│   │   │   │   ├── login.tsx
+│   │   │   │   └── register.tsx
+│   │   │   │
+│   │   │   ├── (tabs)/
+│   │   │   │   ├── ai.tsx
+│   │   │   │   ├── simulator.tsx
+│   │   │   │   ├── marketplace.tsx
+│   │   │   │   └── profile.tsx
+│   │   │   │
+│   │   │   ├── vehicles/
+│   │   │   ├── parts/
+│   │   │   ├── shops/
+│   │   │   ├── requests/
+│   │   │   └── _layout.tsx
+│   │   │
+│   │   ├── src/
+│   │   │   ├── components/
+│   │   │   ├── features/
+│   │   │   │   ├── ai/
+│   │   │   │   ├── simulator/
+│   │   │   │   ├── marketplace/
+│   │   │   │   ├── vehicles/
+│   │   │   │   └── profile/
+│   │   │   ├── services/
+│   │   │   ├── hooks/
+│   │   │   ├── stores/
+│   │   │   └── types/
+│   │   │
+│   │   ├── assets/
+│   │   ├── app.json
+│   │   └── package.json
+│   │
+│   ├── supplier/                   # Expo + React Native
+│   │   ├── app/
+│   │   │   ├── (auth)/
+│   │   │   ├── (tabs)/
+│   │   │   │   ├── index.tsx
+│   │   │   │   ├── inventory.tsx
+│   │   │   │   ├── requests.tsx
+│   │   │   │   └── profile.tsx
+│   │   │   ├── catalog/
+│   │   │   └── branches/
+│   │   │
+│   │   ├── src/
+│   │   │   ├── components/
+│   │   │   ├── features/
+│   │   │   │   ├── inventory/
+│   │   │   │   ├── catalog/
+│   │   │   │   ├── quotations/
+│   │   │   │   └── shops/
+│   │   │   ├── services/
+│   │   │   └── stores/
+│   │   │
+│   │   ├── assets/
+│   │   └── package.json
+│   │
+│   └── admin/                      # Laravel + Tailwind
+│       └── Catalog and supplier management
+│
+├── backend/                        # Laravel API
+│   ├── app/
+│   │   ├── Http/
+│   │   │   ├── Controllers/Api/V1/
+│   │   │   │   ├── Auth/
+│   │   │   │   ├── Catalog/
+│   │   │   │   ├── Customer/
+│   │   │   │   ├── Supplier/
+│   │   │   │   ├── Simulation/
+│   │   │   │   └── AI/
+│   │   │   ├── Requests/
+│   │   │   └── Resources/
+│   │   │
+│   │   ├── Models/
+│   │   ├── Services/
+│   │   │   ├── CatalogService.php
+│   │   │   ├── InventoryService.php
+│   │   │   ├── CompatibilityService.php
+│   │   │   ├── SimulationService.php
+│   │   │   └── AIService.php
+│   │   ├── Jobs/
+│   │   ├── Policies/
+│   │   └── Notifications/
+│   │
+│   ├── database/
+│   │   ├── migrations/
+│   │   ├── seeders/
+│   │   └── factories/
+│   │
+│   ├── routes/
+│   │   └── api.php
+│   ├── tests/
+│   └── composer.json
+│
+├── simulation-engine/             # Python
+│   ├── app/
+│   │   ├── importer/
+│   │   │   ├── cad_importer.py
+│   │   │   └── model_importer.py
+│   │   │
+│   │   ├── processor/
+│   │   │   ├── mesh_processor.py
+│   │   │   └── component_mapper.py
+│   │   │
+│   │   ├── animation/
+│   │   │   ├── animation_builder.py
+│   │   │   └── template_engine.py
+│   │   │
+│   │   ├── validation/
+│   │   └── exporter/
+│   │
+│   ├── templates/
+│   │   ├── brake_replacement/
+│   │   ├── alternator_replacement/
+│   │   └── oil_filter_replacement/
+│   │
+│   ├── main.py
+│   └── requirements.txt
+│
+├── packages/
+│   ├── api-types/
+│   └── shared-utils/
+│
+├── infrastructure/
+│   ├── docker/
+│   └── nginx/
+│
+├── docs/
+│   ├── database.md
+│   ├── api.md
+│   ├── simulation.md
+│   └── architecture.md
+│
+├── docker-compose.yml
+├── package.json
+└── README.md
+
+
+
+The admin folder is optional at the beginning. You can also implement the admin dashboard directly within Laravel rather than maintaining a separate application.
+5. How all the languages communicate
+Customer App
+TypeScript
+
+
+Supplier App
+TypeScript
+
+
+
+HTTPS REST API
+
+Laravel (PHP)
+Business logic and authentication
+
+
+MySQL
+Structured data
+
+
+Python Worker
+Blender automation
+
+
+
+
+Laravel will communicate with the Python worker through a job queue or internal API. The worker processes the 3D assets and writes its outputs to object storage. Laravel then makes the approved simulations available to the mobile app.
+6. Implementation plan
+I would divide the development into six phases.
+Phase	What to build	Result
+1. Foundation	Laravel, MySQL, authentication, Expo projects	Two apps connected to one backend
+2. Catalog	Vehicles, parts, categories, photos, bulk import	Searchable master parts catalog
+3. Supplier system	Shop profiles, branches, inventory, pricing	Shops can publish their parts and prices
+4. Marketplace + AI	Search, price comparison, AI assistant, requests	Customers can find and request parts
+5. Simulation engine	Python, Blender, component mapping, animations	First working automated 3D replacement simulation
+6. Production	Notifications, security, testing, deployment	Release-ready applications
+7. What I recommend building first
+Start with these database tables in this order:
+1. users, roles, user_roles
+2. shops, shop_members, shop_branches
+3. vehicle_makes, vehicle_models, vehicle_variants
+4. part_categories, part_manufacturers, parts
+5. part_images, part_compatibility
+6. shop_parts
+7. part_requests, request_offers
+After those are working, create the AI and simulation tables.
+This order gives you a functional marketplace before you invest heavily in 3D automation.
+My recommendation is to begin with MySQL database migrations in Laravel, because every feature—AI search, supplier pricing, vehicle compatibility, and 3D simulation—will depend on these relationships.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+give me one full senrio of this
+
+
+
+
+
+
+
+
+
+
+
+
+
+Full Scenario — AI Car Spare Parts Marketplace with 3D Replacement Simulation
+Imagine a customer in Bahrain owns a 2020 Toyota Camry 2.5L and notices a strange noise when braking. The customer does not know which component is causing the problem or where to purchase a replacement.
+Your application will guide the customer from identifying the possible problem to exploring an animated 3D replacement simulation, finding suppliers, comparing prices, and requesting a part.
+This scenario covers the Customer App, Supplier App, AI Assistant, 3D Simulation Engine, Laravel Backend, and MySQL Database.
+Stage 1 — Customer opens the application
+Customer Mobile App
+
+Welcome back
+My Garage
+
+
+
+
+
+
+
+
+
+
+
+Toyota Camry 2020
+2.5L Engine · GCC Specification
+Saved vehicle
+
+
+Ask AI
+
+
+3D Simulator
+
+
+Find Parts
+
+
+My Requests
+
+
+
+
+
+The customer has already registered and saved their vehicle in the app.
+Database operations:
+- users — Retrieve customer information.
+- user_vehicles — Retrieve saved vehicles.
+- vehicle_variants — Identify the exact vehicle configuration.
+Stage 2 — Customer asks the AI assistant
+The customer opens the AI section and types:
+AI Car Assistant
+Ready to help
+
+
+My Toyota Camry makes a squeaking noise when I press the brakes. What could be the problem?
+
+
+This could be caused by worn brake pads, brake hardware, or another braking component. An inspection is needed to identify the cause.
+Would you like to explore the brake assembly and see how its components are replaced?
+
+
+ Explore 3D Brake Assembly
+Behind the scenes:
+1. React Native sends the customer's message to Laravel.
+2. Laravel sends the question and relevant vehicle context to the AI service.
+3. The AI identifies possible components and asks for missing details.
+4. Laravel searches the parts catalog for compatible components.
+5. The AI returns an explanation with relevant catalog links.
+The AI should not treat a symptom as a confirmed diagnosis.
+Stage 3 — Customer explores the animated 3D replacement simulator
+
+
+
+
+
+
+
+francedistribution2.com
+
+
+The customer selects Front Brake Pads.
+The application loads a compatible 3D brake assembly from the server. The user can rotate the model, zoom in, and select individual components.
+The simulator displays a guided replacement animation.
+3D Replacement Simulation
+Concept player
+
+Simplified illustration of the simulation sequence, not a mechanical procedure.
+Step 1: Inspect assembly
+1/5
+
+Show the brake assembly and identify its components.
+
+
+
+
+
+
+
+ Previous
+Next 
+
+
+In the actual application, this will be a Three.js-based 3D animation with independently movable components.
+How the automation engine contributes: A previously imported, structured 3D assembly is mapped to a validated replacement template. Python and Blender prepare the animations, and the output is stored as GLB files.
+The animation is generated ahead of time, rather than making the customer wait for Blender to create it during each session.
+Stage 4 — Customer finds the replacement part
+After exploring the simulation, the customer selects Find Replacement Part.
+Laravel uses the selected component's catalog link and the customer's vehicle to find compatible products.
+Find Brake Pads
+
+
+
+
+
+
+
+
+
+
+Front Brake Pad Set
+Toyota Camry 2020 · Example listing
+
+
+Available suppliers
+Auto Parts Center
+In stock
+
+12.000 BHD
+
+
+Gulf Spare Parts
+In stock
+
+14.500 BHD
+
+
+Motor Parts Store
+Limited stock
+
+11.000 BHD
+
+
+All supplier names, prices and availability are illustrative.
+The user can compare prices, open a supplier profile, see its location, and contact the shop.
+Stage 5 — Supplier receives a part request
+Suppose the customer needs a specific brake pad that is not currently listed.
+The customer submits a request with their vehicle details, part description, and optional photos.
+The supplier app receives a notification.
+Supplier App
+
+New Part Request
+
+Vehicle: Toyota Camry 2020
+Requested Part: Front Brake Pads
+Quantity: 1 set
+
+Customer is requesting availability and a quotation.
+
+Quotation price (BHD)
+
+Availability
+Available now
+
+Available by order
+
+
+Prepare QuotationIllustrative supplier form. No quotation is submitted from this demo.
+The supplier does not need to recreate the part. They select the catalog record, enter a price, and submit their quotation.
+The customer then receives a notification and can compare all submitted offers.
+Stage 6 — What happens in the database?
+Here is the complete flow for this scenario.
+Action	Database tables
+Customer signs in	users
+Customer selects Camry 2020	user_vehicles, vehicle_variants
+Customer asks AI	ai_conversations, ai_messages
+AI searches brake components	parts, part_compatibility
+Customer opens simulation	simulation_models, simulation_components
+Replacement animation loads	repair_procedures, repair_steps, repair_step_animations
+Customer compares prices	shop_parts, shops, shop_branches
+Customer requests a part	part_requests
+Supplier sends quotation	request_offers
+Customer receives update	notifications
+Stage 7 — How the entire system communicates
+Customer App
+React Native
+
+
+Supplier App
+React Native
+
+
+
+HTTPS REST API
+
+Laravel Backend
+Authentication, AI orchestration, catalog, inventory, requests
+
+
+MySQL
+Structured data
+
+
+AI API
+Part assistance
+
+
+Python + Blender
+3D automation
+
+
+
+
+Object Storage
+Part photos, 3D models and animation files
+
+
+Final result
+Your application becomes more than a spare parts marketplace.
+A customer can:
+1. Describe a car problem to an AI assistant.
+2. Find the relevant components in the parts catalog.
+3. Explore a mechanically validated, animated 3D replacement simulation.
+4. Find shops selling compatible replacement parts.
+5. Compare prices and availability.
+6. Request unavailable parts and receive supplier quotations.
+Meanwhile, suppliers manage their shops, prices, inventory, and requests from a separate mobile application.
+The most difficult part will be obtaining accurate 3D assemblies and repair procedure data. The marketplace and AI search can be developed independently while you build and validate the simulation automation pipeline.
+For the first working prototype, I would use one vehicle, one brake assembly, and two sample suppliers. Once that complete journey works, you can expand the catalog and add more automated simulations.

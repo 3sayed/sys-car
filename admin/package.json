@@ -1,0 +1,24 @@
+{
+  "name": "@inficarx/admin",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "npm --prefix mobile start",
+    "api": "node scripts/start.mjs",
+    "android": "npm --prefix mobile run android",
+    "apk": "npm --prefix mobile run apk",
+    "engine": "node scripts/engine.mjs",
+    "build:viewer": "esbuild ./viewer/src/viewer.ts --bundle --format=esm --minify --outfile=./public/viewer/viewer.js",
+    "build:admin": "tailwindcss -c tailwind.config.cjs -i resources/css/admin.css -o public/admin.css --minify",
+    "build": "npm run build:admin",
+    "test": "node scripts/test.mjs"
+  },
+  "devDependencies": {
+    "@types/three": "^0.180.0",
+    "esbuild": "^0.25.0",
+    "tailwindcss": "^3.4.17",
+    "three": "^0.180.0",
+    "typescript": "~5.9.2"
+  }
+}

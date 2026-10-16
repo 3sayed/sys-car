@@ -1,0 +1,10 @@
+{
+  "name": "@inficarx/mobile",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "dependencies": {
+    "@inficarx/api-types": "file:../api-types",
+    "@inficarx/shared-utils": "file:../shared-utils"
+  }
+}

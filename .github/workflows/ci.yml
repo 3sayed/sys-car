@@ -1,0 +1,43 @@
+name: Verify marketplace
+on: [push, pull_request]
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: pdo_sqlite,bcmath,gd
+          coverage: none
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: npm ci
+        working-directory: customer
+      - run: npm ci
+        working-directory: supplier
+      - run: npm ci
+        working-directory: admin
+      - run: composer install --no-interaction --prefer-dist
+        working-directory: admin
+      - run: |
+          cp .env.example .env
+          touch database/database.sqlite
+          php artisan key:generate
+          php artisan migrate --seed
+        working-directory: admin
+      - run: npm test
+        working-directory: admin
+      - run: python -m unittest discover -s simulation-engine/tests
+        working-directory: admin
+      - run: npm run build
+        working-directory: admin
+      - run: npm run export
+        working-directory: customer
+      - run: npm run export
+        working-directory: supplier

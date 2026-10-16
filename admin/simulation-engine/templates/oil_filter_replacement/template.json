@@ -1,0 +1,14 @@
+{
+  "label": "Concept filter separation; requires expert validation",
+  "required": [
+    "oil_filter",
+    "housing"
+  ],
+  "offsets": {
+    "oil_filter": [
+      0,
+      0,
+      1
+    ]
+  }
+}

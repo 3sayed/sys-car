@@ -1,0 +1,26 @@
+{
+  "label": "Concept brake explosion, not repair instructions",
+  "required": [
+    "rotor",
+    "caliper",
+    "pad_inner",
+    "pad_outer"
+  ],
+  "offsets": {
+    "caliper": [
+      1.1,
+      0,
+      0
+    ],
+    "pad_inner": [
+      0,
+      -1.5,
+      0
+    ],
+    "pad_outer": [
+      0,
+      1.5,
+      0
+    ]
+  }
+}
